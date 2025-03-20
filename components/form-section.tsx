@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/card";
 import {
   Form,
-  FormControl,
-  FormDescription,
   FormField,
+  FormControl,
   FormItem,
   FormLabel,
   FormMessage,
@@ -43,18 +42,13 @@ const formSchema = z.object({
     .min(1, { message: "Academic performance is required" }),
   location: z.string().min(1, { message: "Location is required" }),
   gpa: z.string().min(1, { message: "GPA is required" }),
-  extracurricular: z.string().optional(),
-  disability: z.string().optional(),
-  residence: z.string().optional(),
-  career: z.string().optional(),
-  community: z.string().optional(),
-  language: z.string().optional(),
-  talents: z.string().optional(),
   fieldOfStudy: z.string().min(1, { message: "Field of study is required" }),
   institutionType: z
     .string()
     .min(1, { message: "Institution type is required" }),
 });
+
+export { formSchema };
 
 interface FormSectionProps {
   onSubmit: (data: z.infer<typeof formSchema>) => void;
@@ -77,20 +71,13 @@ export default function FormSection({ onSubmit, isLoading }: FormSectionProps) {
       academicPerformance: "",
       location: "",
       gpa: "",
-      extracurricular: "",
-      disability: "None",
-      residence: "",
-      career: "",
-      community: "",
-      language: "",
-      talents: "",
       fieldOfStudy: "",
       institutionType: "",
     },
   });
 
   const nextStep = () => {
-    const fieldsToValidate =
+    const fieldsToValidate: (keyof z.infer<typeof formSchema>)[] =
       step === 1
         ? [
             "age",
@@ -111,7 +98,7 @@ export default function FormSection({ onSubmit, isLoading }: FormSectionProps) {
         : [];
 
     const isValid = fieldsToValidate.every((field) => {
-      const value = form.getValues(field as any);
+      const value = form.getValues(field);
       return value !== undefined && value !== "";
     });
 
@@ -119,8 +106,8 @@ export default function FormSection({ onSubmit, isLoading }: FormSectionProps) {
       setStep((prev) => Math.min(prev + 1, totalSteps));
     } else {
       fieldsToValidate.forEach((field) => {
-        if (!form.getValues(field as any)) {
-          form.setError(field as any, {
+        if (!form.getValues(field)) {
+          form.setError(field, {
             type: "manual",
             message: "This field is required",
           });

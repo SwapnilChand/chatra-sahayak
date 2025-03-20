@@ -14,6 +14,10 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
+import { formSchema } from "@/components/form-section";
+import { z } from "zod";
+
+type ScholarshipFormData = z.infer<typeof formSchema>;
 
 interface ScholarshipResult {
   title: string;
@@ -25,7 +29,7 @@ interface ScholarshipResult {
 interface ResultsSectionProps {
   scholarships: ScholarshipResult[];
   onBackToForm: () => void;
-  formData: any;
+  formData: ScholarshipFormData;
 }
 
 export default function ResultsSection({

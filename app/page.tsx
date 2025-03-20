@@ -4,20 +4,43 @@ import { useState } from "react";
 import LandingSection from "@/components/landing-section";
 import FormSection from "@/components/form-section";
 import ResultsSection from "@/components/results-section";
+import { z } from "zod";
+import { formSchema } from "@/components/form-section";
+
+type ScholarshipFormData = z.infer<typeof formSchema>;
+
+interface ScholarshipResult {
+  title: string;
+  url: string;
+  content: string;
+  score?: number;
+}
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<
     "landing" | "form" | "results"
   >("landing");
-  const [formData, setFormData] = useState({});
-  const [scholarships, setScholarships] = useState([]);
+  const [formData, setFormData] = useState<ScholarshipFormData>({
+    age: "",
+    gender: "",
+    caste: "",
+    religion: "",
+    familyIncome: "",
+    academicPerformance: "",
+    location: "",
+    gpa: "",
+    fieldOfStudy: "",
+    institutionType: "",
+    familyOccupation: "",
+  });
+  const [scholarships, setScholarships] = useState<ScholarshipResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStart = () => {
     setCurrentStep("form");
   };
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: ScholarshipFormData) => {
     setFormData(data);
     setIsLoading(true);
 
@@ -42,9 +65,21 @@ export default function Home() {
     }
   };
 
-  const buildSearchQuery = (data: any) => {
-    return `Find scholarships for ${data.gender} students in ${data.location} studying ${data.fieldOfStudy} with ${data.academicPerformance} academic performance. 
-    Family background: income ${data.familyIncome}, occupation ${data.familyOccupation}, caste ${data.caste}, religion ${data.religion}. Looking for scholarships in ${data.institutionType} institutions. Additional details: Age ${data.age}, GPA ${data.gpa}, Disability status: ${data.disability}`;
+  const buildSearchQuery = (data: ScholarshipFormData) => {
+    const gender = data.gender || "all";
+    const location = data.location || "all locations";
+    const fieldOfStudy = data.fieldOfStudy || "all fields";
+    const academicPerformance = data.academicPerformance || "any";
+    const familyIncome = data.familyIncome || "not specified";
+    const familyOccupation = data.familyOccupation || "not specified";
+    const caste = data.caste || "not specified";
+    const religion = data.religion || "not specified";
+    const institutionType = data.institutionType || "any";
+    const age = data.age || "any";
+    const gpa = data.gpa || "not specified";
+
+    return `Find scholarships for ${gender} students in ${location} studying ${fieldOfStudy} with ${academicPerformance} academic performance. 
+    Family background: income ${familyIncome}, occupation ${familyOccupation}, caste ${caste}, religion ${religion}. Looking for scholarships in ${institutionType} institutions. Additional details: Age ${age}, GPA ${gpa}`;
   };
 
   const handleBackToForm = () => {
@@ -64,7 +99,6 @@ export default function Home() {
           formData={formData}
         />
       )}
-      {/* <Toaster /> */}
     </main>
   );
 }
